@@ -1,0 +1,169 @@
+﻿@page "/"
+
+<h3>Descubre tus virtudes</h3>
+
+@if (!showResults)
+{
+    <div style="margin-bottom: 20px;">
+        <p>1- ¿En cuál de estas asignaturas tienes mejor desempeño?</p>
+        <input type="radio" name="asignatura" @oninput="ActualizarRespuestaAsignatura" value="Matematicas" /> Matemáticas
+        <input type="radio" name="asignatura" @oninput="ActualizarRespuestaAsignatura" value="Quimica" /> Química
+        <input type="radio" name="asignatura" @oninput="ActualizarRespuestaAsignatura" value="Sociales" /> Sociales
+    </div>
+    <div style="margin-bottom: 20px;">
+        <p>2- ¿Qué prefieres?</p>
+        <input type="radio" name="preferencia" @oninput="ActualizarRespuestaPreferencia" value="Salir de fiesta" /> Salir de fiesta
+        <input type="radio" name="preferencia" @oninput="ActualizarRespuestaPreferencia" value="Quedarte en casa" /> Quedarte en casa
+        <input type="radio" name="preferencia" @oninput="ActualizarRespuestaPreferencia" value="Actividades familiares" /> Actividades familiares
+    </div>
+    <div style="margin-bottom: 20px;">
+        <p>3- ¿Qué categoría de entretenimiento prefieres?</p>
+        <input type="radio" name="entretenimiento" @oninput="ActualizarRespuestaEntretenimiento" value="Tecnología y ciencia ficción" /> Tecnología y ciencia ficción
+        <input type="radio" name="entretenimiento" @oninput="ActualizarRespuestaEntretenimiento" value="Documentales medicos" /> Documentales médicos
+        <input type="radio" name="entretenimiento" @oninput="ActualizarRespuestaEntretenimiento" value="Thrillers legales" /> Thrillers legales
+    </div>
+
+    <button @onclick="EnviarRespuestas" class="btn-enviar" disabled="@cargando">Enviar</button>
+
+    @if (cargando)
+    {
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    }
+
+    @if (mostrarMensajeError)
+    {
+        <p style="color: red; margin-top: 10px;">Debes llenar todas las preguntas.</p>
+    }
+}
+else
+{
+    <h3>¡En horabuena!</h3>
+    <p>@mensajeFinal</p>
+
+    @if (cargando)
+    {
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    }
+
+    <button @onclick="Retroceder" class="btn-enviar">Retroceder</button>
+}
+
+<style>
+    /* Agregar el estilo del botón de enviar */
+    .btn-enviar {
+        background-color: orange;
+        font-size: 18px;
+        margin-top: 10px;
+    }
+</style>
+
+@code {
+    bool showResults = false;
+    bool mostrarMensajeError = false;
+    bool cargando = false;
+    string respuestaAsignatura;
+    string respuestaPreferencia;
+    string respuestaEntretenimiento;
+    string mensajeFinal;
+
+    void ActualizarRespuestaAsignatura(ChangeEventArgs e)
+    {
+        respuestaAsignatura = e.Value.ToString();
+    }
+
+    void ActualizarRespuestaPreferencia(ChangeEventArgs e)
+    {
+        respuestaPreferencia = e.Value.ToString();
+    }
+
+    void ActualizarRespuestaEntretenimiento(ChangeEventArgs e)
+    {
+        respuestaEntretenimiento = e.Value.ToString();
+    }
+
+    async Task EnviarRespuestas()
+    {
+        // Validación de respuestas vacías
+        if (respuestaAsignatura == null || respuestaPreferencia == null || respuestaEntretenimiento == null)
+        {
+            mostrarMensajeError = true;
+            return;
+        }
+
+        cargando = true;
+
+        // Simular un tiempo de carga antes de mostrar los resultados
+        await Task.Delay(3000);
+
+        showResults = true;
+        mostrarMensajeError = false;
+        cargando = false;
+
+        mensajeFinal = ObtenerMensajeFinal();
+    }
+
+    void Retroceder()
+    {
+        showResults = false;
+        mostrarMensajeError = false;
+
+        // Restablecer respuestas a valores iniciales al retroceder
+        respuestaAsignatura = null;
+        respuestaPreferencia = null;
+        respuestaEntretenimiento = null;
+    }
+
+    string ObtenerMensajeFinal()
+    {
+        string mensajeAsignatura = "";
+
+        if (respuestaAsignatura == "Matematicas")
+        {
+            mensajeAsignatura = "Cada problema que resuelves y cada fórmula que dominas te acerca aún más al descubrimiento de los secretos del universo.";
+        }
+        else if (respuestaAsignatura == "Quimica")
+        {
+            mensajeAsignatura = "¡Eres un apasionado de la química y eso es asombroso! Tu fascinación por los elementos y las reacciones químicas muestra tu curiosidad innata y tu amor por descubrir cómo funciona el mundo a nivel molecular.";
+        }
+        else if (respuestaAsignatura == "Sociales")
+        {
+            mensajeAsignatura = "¡Felicidades por tu pasión y amor por las Ciencias Sociales! Tu interés en esta asignatura demuestra que tienes una mente curiosa y abierta hacia el mundo que te rodea. A través de las Ciencias Sociales, explorarás la riqueza de la historia, las culturas y las sociedades, y comprenderás cómo han evolucionado a lo largo del tiempo.";
+        }
+
+        string mensajePreferencia = "";
+
+        if (respuestaPreferencia == "Salir de fiesta")
+        {
+            mensajePreferencia = "Disfruta cada momento y vive al máximo! Tu pasión por la diversión y la fiesta es contagiosa, y eso es lo que hace que la vida sea emocionante. Cada noche de fiesta te brinda la oportunidad de crear recuerdos inolvidables y conectar con personas especiales. La música, el baile y las risas son la receta perfecta para liberar tensiones y disfrutar de la vida al máximo.";
+        }
+        else if (respuestaPreferencia == "Quedarte en casa")
+        {
+            mensajePreferencia = "Eres un experto en el arte de disfrutar el hogar y eso es asombroso! Sabes cómo convertir tu espacio en un refugio acogedor y lleno de comodidades.";
+        }
+        else if (respuestaPreferencia == "Actividades familiares")
+        {
+            mensajePreferencia = "Qué maravilloso es tu amor por las actividades familiares! Tu dedicación para reunir a tus seres queridos y crear momentos especiales es realmente inspirador.";
+        }
+
+        string mensajeEntretenimiento = "";
+
+        if (respuestaEntretenimiento == "Tecnología y ciencia ficción")
+        {
+            mensajeEntretenimiento = "Tu fascinación por las películas tecnológicas muestra tu interés en el futuro y la innovación.";
+        }
+        else if (respuestaEntretenimiento == "Documentales medicos")
+        {
+            mensajeEntretenimiento = "Tu amor por los documentales médicos muestra tu deseo de aprender y comprender las complejidades del cuerpo humano y las diversas enfermedades que afectan a la humanidad.";
+        }
+        else if (respuestaEntretenimiento == "Thrillers legales")
+        {
+            mensajeEntretenimiento = "Eres un amante del suspenso y la emoción, y eso es asombroso! Tu pasión por los thrillers muestra tu deseo de sumergirte en mundos llenos de misterio, giros inesperados y emociones intensas.";
+        }
+
+        return $"{mensajeAsignatura} {mensajePreferencia} {mensajeEntretenimiento}";
+    }
+}
